@@ -22,4 +22,9 @@
       }
     </tbody>
   </table>
+  <div id="loader">
+    @if (customers.isFetching()) {
+      <div class="animate-pulse m-3">Loading....</div>
+    }
+  </div>
 </div>

@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { lastValueFrom } from 'rxjs';
+import { delay, lastValueFrom } from 'rxjs';
 
 interface Customer {
   id: number;
@@ -15,11 +15,9 @@ interface Customer {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   http = inject(HttpClient);
   pageSize = 50;
 
@@ -28,11 +26,22 @@ export class AppComponent {
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
       lastValueFrom(
-        this.http.get<Customer[]>(
-          `http://localhost:3000/customers?page=${pageParam}&page_size=${this.pageSize}`,
-        ),
+        this.http
+          .get<
+            Customer[]
+          >(`http://localhost:3000/customers?page=${pageParam}&page_size=${this.pageSize}`)
+          .pipe(delay(500)),
       ),
     getNextPageParam: (lastPage) => lastPage[0].id / this.pageSize + 1,
     select: (data) => data.pages.flat(),
   }));
+
+  ngOnInit() {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        this.customers.fetchNextPage();
+      }
+    });
+    observer.observe(document.querySelector('#loader') as Element);
+  }
 }
