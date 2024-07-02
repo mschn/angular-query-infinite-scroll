@@ -1,0 +1,25 @@
+<div class="my-3 mx-auto container border shadow-md rounded">
+  <table class="w-full table-auto">
+    <thead class="text-left p-3 bg-gray-100">
+      <th class="p-2">#</th>
+      <th class="p-2">Name</th>
+      <th class="p-2">Company</th>
+    </thead>
+    <tbody>
+      @for (customer of customers.data(); track customer.id) {
+        <tr class="border border-x-0">
+          <td class="p-2 text-gray-600">{{ customer.id + 1 }}.</td>
+          <td class="p-2">
+            <span
+              [style.background-color]="customer.color"
+              class="brightness-150 p-2 rounded-full text-xs mr-2 font-semibold"
+              >{{ customer.firstName[0] + customer.lastName[0] }}</span
+            >
+            {{ customer.firstName }} {{ customer.lastName }}
+          </td>
+          <td class="p-2">{{ customer.company }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
